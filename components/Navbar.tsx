@@ -69,11 +69,59 @@ export function Navbar() {
                         </Link>
                     )}
 
-                    <button className="md:hidden rounded-full p-2 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="md:hidden rounded-full p-2 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                    >
                         <Menu className="h-5 w-5" />
                     </button>
                 </div>
             </div>
+
+            {/* Mobile Menu */}
+            {isMenuOpen && (
+                <div className="md:hidden border-t border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
+                    <div className="flex flex-col space-y-4 p-4">
+                        <Link
+                            href="/courses"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-sm font-medium text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                        >
+                            Cursos
+                        </Link>
+                        <Link
+                            href="/paths"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-sm font-medium text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                        >
+                            Rutas de Aprendizaje
+                        </Link>
+                        <Link
+                            href="/blog"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-sm font-medium text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                        >
+                            Blog
+                        </Link>
+                        <Link
+                            href="/about"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-sm font-medium text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                        >
+                            Nosotros
+                        </Link>
+                        {!session && (
+                            <Link
+                                href="/login"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="rounded-full bg-zinc-900 px-4 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+                            >
+                                Ingresar
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }
