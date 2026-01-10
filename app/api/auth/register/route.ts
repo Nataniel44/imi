@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-// Bypass SSL check for self-signed certificates (Development only)
-if (process.env.NODE_ENV === 'development') {
+// Bypass SSL check for self-signed certificates if configured in environment
+if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
