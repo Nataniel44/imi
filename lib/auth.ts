@@ -10,29 +10,37 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Contraseña", type: "password" }
             },
             async authorize(credentials) {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/jwt-auth/v1/token`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: credentials?.username,
-                        password: credentials?.password,
-                    }),
-                });
+                const url = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/jwt-auth/v1/token`;
+                console.log("Attempting login at:", url);
 
-                const user = await res.json();
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: credentials?.username,
+                            password: credentials?.password,
+                        }),
+                    });
 
-                // If no error and we have a token, return the user
-                if (res.ok && user.token) {
-                    return {
-                        id: user.user_id,
-                        name: user.user_display_name,
-                        email: user.user_email,
-                        token: user.token, // We'll need this to make authenticated requests
-                    };
+                    const user = await res.json();
+                    console.log("WordPress Auth Response:", user);
+
+                    if (res.ok && user.token) {
+                        return {
+                            id: user.user_id,
+                            name: user.user_display_name,
+                            email: user.user_email,
+                            token: user.token,
+                        };
+                    }
+
+                    console.error("Login failed. Status:", res.status, user.message || "");
+                    return null;
+                } catch (error) {
+                    console.error("Auth error:", error);
+                    return null;
                 }
-
-                // Return null if user data could not be retrieved
-                return null;
             }
         })
     ],
