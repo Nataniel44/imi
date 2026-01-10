@@ -25,6 +25,11 @@ export function Navbar() {
                     <Link href="/courses" className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
                         Cursos
                     </Link>
+                    {session && (
+                        <Link href="/my-courses" className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
+                            Mis Cursos
+                        </Link>
+                    )}
                     <Link href="/paths" className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
                         Rutas de Aprendizaje
                     </Link>

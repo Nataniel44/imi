@@ -34,9 +34,11 @@ export async function POST(request: Request) {
                         title: title,
                         quantity: 1,
                         unit_price: numericPrice,
-                        currency_id: 'ARS', // Assuming Argentinian Pesos
+                        currency_id: 'ARS',
                     },
                 ],
+                external_reference: id, // Course slug to identify the purchase
+                notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/mercadopago`,
                 back_urls: {
                     success: `${process.env.NEXT_PUBLIC_BASE_URL}/courses`,
                     failure: `${process.env.NEXT_PUBLIC_BASE_URL}/courses`,
