@@ -16,8 +16,8 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
-                if (!wpUrl) {
-                    console.error("NEXT_PUBLIC_WORDPRESS_URL is not defined");
+                if (!wpUrl || wpUrl.trim() === "") {
+                    console.error("NEXT_PUBLIC_WORDPRESS_URL is not defined or empty");
                     return null;
                 }
 

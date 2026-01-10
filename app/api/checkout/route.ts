@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 
-if (!process.env.MP_ACCESS_TOKEN) {
-    console.error("MP_ACCESS_TOKEN is missing in environment variables");
+const mpToken = process.env.MP_ACCESS_TOKEN;
+if (!mpToken || mpToken.trim() === "") {
+    console.error("MP_ACCESS_TOKEN is missing or empty in environment variables");
 }
 
-const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN || '' });
+const client = new MercadoPagoConfig({ accessToken: mpToken || 'dummy_token' });
 
 export async function POST(request: Request) {
     try {

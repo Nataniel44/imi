@@ -34,7 +34,15 @@ export async function POST(request: Request) {
         adminPass = adminPass.replace(/\s/g, '');
 
         // Create user in WordPress
-        const wpRes = await fetch(`${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/wp/v2/users`, {
+        const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+        if (!wpUrl) {
+            return NextResponse.json(
+                { error: "WordPress URL not configured" },
+                { status: 500 }
+            );
+        }
+
+        const wpRes = await fetch(`${wpUrl}/wp-json/wp/v2/users`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

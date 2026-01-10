@@ -3,11 +3,16 @@ if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 }
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'http://localhost:8000';
+const rawUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+const WP_API_URL = (rawUrl && rawUrl.trim() !== "") ? rawUrl : 'http://localhost:8000';
+
+if (!WP_API_URL || !WP_API_URL.startsWith('http')) {
+    console.error(`ERROR: Invalid NEXT_PUBLIC_WORDPRESS_URL: "${WP_API_URL}". It must be an absolute URL starting with http or https.`);
+}
 
 export async function getCourses() {
     const url = `${WP_API_URL}/wp-json/wp/v2/cursos?_embed&acf_format=standard`;
-    console.log(`Fetching courses from: ${url}`);
+    console.log(`[DEBUG] Fetching courses from: "${url}"`);
 
     try {
         const res = await fetch(url);
