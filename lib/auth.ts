@@ -1,6 +1,11 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+// Bypass SSL check for self-signed certificates if configured in environment
+if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -10,7 +15,13 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Contraseña", type: "password" }
             },
             async authorize(credentials) {
-                const url = `${process.env.NEXT_PUBLIC_WORDPRESS_URL}/wp-json/jwt-auth/v1/token`;
+                const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+                if (!wpUrl) {
+                    console.error("NEXT_PUBLIC_WORDPRESS_URL is not defined");
+                    return null;
+                }
+
+                const url = `${wpUrl}/wp-json/jwt-auth/v1/token`;
                 console.log("Attempting login at:", url);
 
                 try {
@@ -24,9 +35,10 @@ export const authOptions: NextAuthOptions = {
                     });
 
                     const user = await res.json();
-                    console.log("WordPress Auth Response:", user);
+                    console.log("WordPress Auth Response Status:", res.status);
 
                     if (res.ok && user.token) {
+                        console.log("Login successful for user:", user.user_display_name);
                         return {
                             id: user.user_id,
                             name: user.user_display_name,
@@ -35,10 +47,10 @@ export const authOptions: NextAuthOptions = {
                         };
                     }
 
-                    console.error("Login failed. Status:", res.status, user.message || "");
+                    console.error("Login failed. Status:", res.status, "Message:", user.message || "No message");
                     return null;
-                } catch (error) {
-                    console.error("Auth error:", error);
+                } catch (error: any) {
+                    console.error("Auth error during fetch:", error.message || error);
                     return null;
                 }
             }
@@ -58,5 +70,6 @@ export const authOptions: NextAuthOptions = {
     },
     pages: {
         signIn: '/login',
-    }
+    },
+    secret: process.env.NEXTAUTH_SECRET,
 };
