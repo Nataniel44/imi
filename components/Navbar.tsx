@@ -3,11 +3,29 @@
 import Link from 'next/link';
 import { Menu, Search, ShoppingCart, User, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export function Navbar() {
     const { data: session } = useSession();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const userMenuRef = useRef<HTMLDivElement>(null);
+
+    // Close user menu when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+                setIsUserMenuOpen(false);
+            }
+        }
+
+        if (isUserMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        }
+    }, [isUserMenuOpen]);
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
@@ -50,20 +68,28 @@ export function Navbar() {
                     </button>
 
                     {session ? (
-                        <div className="relative group">
-                            <button className="flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
+                        <div ref={userMenuRef} className="relative">
+                            <button
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                className="flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                            >
                                 <User className="h-4 w-4" />
                                 <span>{session.user?.name || "Usuario"}</span>
                             </button>
-                            <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:ring-zinc-700 hidden group-hover:block">
-                                <button
-                                    onClick={() => signOut()}
-                                    className="flex w-full items-center px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                                >
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    Cerrar Sesión
-                                </button>
-                            </div>
+                            {isUserMenuOpen && (
+                                <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:ring-zinc-700">
+                                    <button
+                                        onClick={() => {
+                                            setIsUserMenuOpen(false);
+                                            signOut();
+                                        }}
+                                        className="flex w-full items-center px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                    >
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <Link
@@ -94,6 +120,15 @@ export function Navbar() {
                         >
                             Cursos
                         </Link>
+                        {session && (
+                            <Link
+                                href="/my-courses"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-sm font-medium text-zinc-600 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                            >
+                                Mis Cursos
+                            </Link>
+                        )}
                         <Link
                             href="/paths"
                             onClick={() => setIsMenuOpen(false)}

@@ -12,7 +12,13 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
         console.log("Checkout request body:", body);
-        const { id, title, price } = body;
+        const { id, title, price, userEmail } = body;
+
+        // Validate user email
+        if (!userEmail || !userEmail.includes('@')) {
+            console.error("Invalid or missing user email:", userEmail);
+            return NextResponse.json({ error: "Email de usuario requerido" }, { status: 400 });
+        }
 
         // Parse price: remove non-numeric chars (except dot/comma if needed, but assuming integer for ARS usually)
         // Example: "$ 5000" -> 5000
@@ -26,29 +32,37 @@ export async function POST(request: Request) {
 
         const preference = new Preference(client);
 
-        const result = await preference.create({
-            body: {
-                items: [
-                    {
-                        id: id,
-                        title: title,
-                        quantity: 1,
-                        unit_price: numericPrice,
-                        currency_id: 'ARS',
-                    },
-                ],
-                external_reference: id, // Course slug to identify the purchase
-                notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/mercadopago`,
-                back_urls: {
-                    success: `${process.env.NEXT_PUBLIC_BASE_URL}/courses`,
-                    failure: `${process.env.NEXT_PUBLIC_BASE_URL}/courses`,
-                    pending: `${process.env.NEXT_PUBLIC_BASE_URL}/courses`,
+        const preferenceData = {
+            items: [
+                {
+                    id: id,
+                    title: title,
+                    quantity: 1,
+                    unit_price: numericPrice,
+                    currency_id: 'ARS',
                 },
-                auto_return: 'approved',
-            }
+            ],
+            payer: {
+                email: userEmail, // Set the user's email
+            },
+            external_reference: id, // Course slug to identify the purchase
+            notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/mercadopago`,
+            back_urls: {
+                success: `${process.env.NEXT_PUBLIC_BASE_URL}/courses?payment=success`,
+                failure: `${process.env.NEXT_PUBLIC_BASE_URL}/courses?payment=failure`,
+                pending: `${process.env.NEXT_PUBLIC_BASE_URL}/courses?payment=pending`,
+            },
+            auto_return: 'approved',
+        };
+
+        console.log("Creating preference with data:", JSON.stringify(preferenceData, null, 2));
+
+        const result = await preference.create({
+            body: preferenceData
         });
 
-        return NextResponse.json({ url: result.init_point });
+        console.log("Preference created successfully:", result.id);
+        return NextResponse.json({ url: result.init_point, preferenceId: result.id });
     } catch (error) {
         console.error("Mercado Pago Error:", error);
         return NextResponse.json({ error: "Error creating preference" }, { status: 500 });
