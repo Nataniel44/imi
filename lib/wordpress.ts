@@ -37,3 +37,12 @@ export async function getCourseBySlug(slug: string) {
     const courses = await res.json();
     return courses.length > 0 ? courses[0] : null;
 }
+
+export async function getCourseById(id: number) {
+    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/cursos/${id}?_embed&acf_format=standard`);
+    if (!res.ok) {
+        if (res.status === 404) return null;
+        throw new Error('Failed to fetch course by ID');
+    }
+    return res.json();
+}

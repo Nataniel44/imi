@@ -17,7 +17,7 @@ interface CourseProps {
 export function CourseCard({ title, slug, image, category, description, lessons, duration, rating, price }: CourseProps) {
     return (
         <Link href={`/courses/${slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900/50">
-            <div className="relative aspect-video w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                 {/* Placeholder for image if not provided or while loading */}
                 <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
                     <span className="text-4xl">📚</span>

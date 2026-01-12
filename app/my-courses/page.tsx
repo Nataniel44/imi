@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { CourseCard } from "@/components/CourseCard";
-import { getCourseBySlug } from "@/lib/wordpress";
+import { getCourseBySlug, getCourseById } from "@/lib/wordpress";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -26,11 +26,12 @@ export default async function MyCoursesPage() {
     }
 
     adminPass = adminPass.replace(/\s/g, '');
+    const authHeader = "Basic " + Buffer.from(`${adminUser}:${adminPass}`).toString("base64");
 
     // Get user by email
-    const usersRes = await fetch(`${wpUrl}/wp-json/wp/v2/users?search=${encodeURIComponent(session.user?.email || '')}`, {
+    const usersRes = await fetch(`${wpUrl}/wp-json/wp/v2/users?search=${encodeURIComponent(session.user?.email || '')}&context=edit`, {
         headers: {
-            Authorization: "Basic " + Buffer.from(`${adminUser}:${adminPass}`).toString("base64"),
+            Authorization: authHeader,
         },
         cache: 'no-store'
     });
@@ -40,11 +41,23 @@ export default async function MyCoursesPage() {
     let purchasedCourses: any[] = [];
 
     if (users.length > 0) {
-        const purchasedCourseSlugs = users[0].acf?.purchased_courses || [];
+        const rawPurchasedCourses = users[0].acf?.purchased_courses || [];
 
-        // Fetch each purchased course
-        for (const slug of purchasedCourseSlugs) {
-            const course = await getCourseBySlug(slug);
+        // Handle both IDs (numbers) and Slugs (strings)
+        for (const item of rawPurchasedCourses) {
+            let course = null;
+
+            // If it's an object (sometimes ACF returns objects), extract ID
+            const idOrSlug = (typeof item === 'object' && item !== null) ? (item.ID || item.id) : item;
+
+            if (typeof idOrSlug === 'number' || !isNaN(Number(idOrSlug))) {
+                console.log(`Fetching course by ID: ${idOrSlug}`);
+                course = await getCourseById(Number(idOrSlug));
+            } else if (typeof idOrSlug === 'string') {
+                console.log(`Fetching course by Slug: ${idOrSlug}`);
+                course = await getCourseBySlug(idOrSlug);
+            }
+
             if (course) {
                 purchasedCourses.push(course);
             }
