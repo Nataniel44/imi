@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Navbar } from "@/components/Navbar";
 import { getCourseBySlug, getCourses } from "@/lib/wordpress";
-import { Clock, BookOpen, Star, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Clock, BookOpen, Star, CheckCircle, ArrowLeft, PlayCircle } from 'lucide-react';
 import { BuyButton } from "@/components/BuyButton";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -15,9 +17,37 @@ export const revalidate = 60;
 export default async function CoursePage({ params }: PageProps) {
     const { slug } = await params;
     const course = await getCourseBySlug(slug);
+    const session = await getServerSession(authOptions);
 
     if (!course) {
         notFound();
+    }
+
+    // Check if user has purchased the course
+    let isPurchased = false;
+    if (session?.user?.email) {
+        const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL;
+        const adminUser = process.env.WP_ADMIN_USER;
+        let adminPass = process.env.WP_ADMIN_APP_PASSWORD;
+
+        if (wpUrl && adminUser && adminPass) {
+            adminPass = adminPass.replace(/\s/g, '');
+            const authHeader = "Basic " + Buffer.from(`${adminUser}:${adminPass}`).toString("base64");
+
+            const usersRes = await fetch(`${wpUrl}/wp-json/wp/v2/users?search=${encodeURIComponent(session.user.email)}&context=edit`, {
+                headers: { Authorization: authHeader },
+                cache: 'no-store'
+            });
+
+            const users = await usersRes.json();
+            if (users.length > 0) {
+                const purchasedCourses = users[0].acf?.purchased_courses || [];
+                isPurchased = purchasedCourses.some((c: any) => {
+                    const idOrSlug = (typeof c === 'object' && c !== null) ? (c.ID || c.id || c.post_name) : c;
+                    return idOrSlug === course.id || idOrSlug === course.slug;
+                });
+            }
+        }
     }
 
     // Extract data safely
@@ -106,15 +136,25 @@ export default async function CoursePage({ params }: PageProps) {
                 <div className="relative">
                     <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-900">
                         <div className="mb-6 text-center">
-                            <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{price}</span>
+                            <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{isPurchased ? "Adquirido" : price}</span>
                             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Acceso de por vida al contenido</p>
                         </div>
 
-                        <BuyButton
-                            courseId={course.slug}
-                            title={course.title.rendered}
-                            price={price}
-                        />
+                        {isPurchased ? (
+                            <Link
+                                href={`/courses/${slug}/learn`}
+                                className="mb-4 flex w-full items-center justify-center gap-2 rounded-full bg-green-600 py-3 font-bold text-white transition-colors hover:bg-green-700"
+                            >
+                                <PlayCircle className="h-5 w-5" />
+                                Empezar Curso
+                            </Link>
+                        ) : (
+                            <BuyButton
+                                courseId={course.slug}
+                                title={course.title.rendered}
+                                price={price}
+                            />
+                        )}
 
                         <button className="w-full rounded-full border border-zinc-200 bg-white py-3 font-bold text-zinc-900 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700">
                             Descargar Temario

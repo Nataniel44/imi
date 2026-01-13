@@ -30,12 +30,12 @@ export function Navbar() {
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
             <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-                <Link href="/" className="flex items-center gap-2">
+                <Link href="/" className="flex items-center gap-2 shrink-0">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white font-bold">
                         M
                     </div>
                     <span className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                        Mundo Informática
+                        Mundo<span className="hidden sm:inline"> Informática</span>
                     </span>
                 </Link>
 
@@ -60,7 +60,7 @@ export function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button className="rounded-full p-2 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
+                    <button className="hidden sm:block rounded-full p-2 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
                         <Search className="h-5 w-5" />
                     </button>
                     <button className="rounded-full p-2 text-zinc-600 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800">
@@ -71,10 +71,10 @@ export function Navbar() {
                         <div ref={userMenuRef} className="relative">
                             <button
                                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                className="flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
+                                className="flex items-center gap-2 rounded-full bg-zinc-100 p-2 sm:px-4 sm:py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700"
                             >
                                 <User className="h-4 w-4" />
-                                <span>{session.user?.name || "Usuario"}</span>
+                                <span className="hidden sm:inline">{session.user?.name || "Usuario"}</span>
                             </button>
                             {isUserMenuOpen && (
                                 <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-zinc-900 dark:ring-zinc-700">
