@@ -30,7 +30,9 @@ export async function getCourses() {
 }
 
 export async function getCourseBySlug(slug: string) {
-    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/cursos?slug=${slug}&_embed&acf_format=standard`);
+    const url = `${WP_API_URL}/wp-json/wp/v2/cursos?slug=${slug}&_embed&acf_format=standard`;
+    console.log(`[DEBUG] Fetching course by slug: ${url}`);
+    const res = await fetch(url);
     if (!res.ok) {
         throw new Error('Failed to fetch course');
     }
@@ -49,7 +51,9 @@ export async function getCourseById(id: number) {
 
 export async function getLessonsByCourseId(courseId: number) {
     // Nota: Por defecto traemos 100 para asegurar que entren todas las de un curso
-    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/lecciones?_embed&acf_format=standard&per_page=100`);
+    const url = `${WP_API_URL}/wp-json/wp/v2/lecciones?_embed&acf_format=standard&per_page=100`;
+    console.log(`[DEBUG] Fetching lessons: ${url}`);
+    const res = await fetch(url);
     if (!res.ok) {
         throw new Error('Failed to fetch lessons');
     }
