@@ -46,3 +46,19 @@ export async function getCourseById(id: number) {
     }
     return res.json();
 }
+
+export async function getLessonsByCourseId(courseId: number) {
+    // Nota: Por defecto traemos 100 para asegurar que entren todas las de un curso
+    const res = await fetch(`${WP_API_URL}/wp-json/wp/v2/lecciones?_embed&acf_format=standard&per_page=100`);
+    if (!res.ok) {
+        throw new Error('Failed to fetch lessons');
+    }
+    const allLessons = await res.json();
+
+    // Filtrado por curso_relacionado
+    return allLessons.filter((lesson: any) => {
+        const rel = lesson.acf?.curso_relacionado;
+        const relId = (typeof rel === 'object' && rel !== null) ? (rel.ID || rel.id) : rel;
+        return Number(relId) === Number(courseId);
+    }).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
