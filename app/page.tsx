@@ -104,6 +104,7 @@ export default async function Home() {
                   src="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2070&auto=format&fit=crop"
                   alt="Estudiantes aprendiendo"
                   fill
+                  unoptimized
                   className="object-cover"
                 />
               </div>

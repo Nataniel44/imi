@@ -28,8 +28,9 @@ export function CourseCard({ title, slug, image, category, description, lessons,
                 {image && (
                     <Image
                         src={image}
-                        alt={title}
+                        alt={title.replace(/<[^>]+>/g, '')}
                         fill
+                        unoptimized
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                 )}

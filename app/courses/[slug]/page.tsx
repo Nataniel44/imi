@@ -66,8 +66,9 @@ export default async function CoursePage({ params }: PageProps) {
             <div className="relative h-[400px] w-full overflow-hidden bg-zinc-900">
                 <Image
                     src={image}
-                    alt={course.title.rendered}
+                    alt={course.title.rendered.replace(/<[^>]+>/g, '')}
                     fill
+                    unoptimized
                     className="object-cover opacity-50"
                     priority
                 />
