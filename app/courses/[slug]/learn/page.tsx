@@ -65,11 +65,6 @@ export default function LearnPage() {
                         setActiveLesson(courseLessons[0]);
                         const firstModule = courseLessons[0].acf?.modulo || "General";
                         setExpandedModules([firstModule]);
-                        console.log("[DEBUG] Data loaded:", {
-                            courseFound: !!currentCourse,
-                            lessonsCount: courseLessons.length,
-                            firstLesson: courseLessons[0]?.title?.rendered
-                        });
                     }
                 } catch (error) {
                     console.error("Error loading classroom data:", error);
@@ -110,9 +105,8 @@ export default function LearnPage() {
     // Normalización de tipo de lección
     const lessonType = useMemo(() => {
         const raw = activeLesson?.acf?.tipo;
-        const type = (typeof raw === 'object' && raw !== null) ? (raw.value || "").toLowerCase() : (raw || "").toString().toLowerCase();
-        console.log("[DEBUG] Normalized lessonType:", type, "Raw:", raw);
-        return type;
+        if (typeof raw === 'object' && raw !== null) return (raw.value || "").toLowerCase();
+        return (raw || "").toString().toLowerCase();
     }, [activeLesson]);
 
     if (loading) {
@@ -137,16 +131,13 @@ export default function LearnPage() {
                         {/* Reproductor de Video */}
                         <div className="relative aspect-video w-full overflow-hidden bg-black md:rounded-2xl md:shadow-2xl">
                             {lessonType === 'video' && activeLesson?.acf?.url_video ? (
-                                <>
-                                    {console.log("[DEBUG] Rendering ReactPlayer with URL:", activeLesson.acf.url_video)}
-                                    <ReactPlayer
-                                        url={activeLesson.acf.url_video}
-                                        width="100%"
-                                        height="100%"
-                                        controls
-                                        playing={false}
-                                    />
-                                </>
+                                <ReactPlayer
+                                    src={activeLesson.acf.url_video}
+                                    width="100%"
+                                    height="100%"
+                                    controls
+                                    playing={false}
+                                />
                             ) : (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 text-white px-4 text-center">
                                     <div className="mb-6 rounded-full bg-white/5 p-8 backdrop-blur-xl border border-white/10">
