@@ -74,15 +74,18 @@ export default async function CoursePage({ params }: PageProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
                     <div className="container mx-auto">
-                        <Link
-                            href="/courses"
-                            className="mb-6 inline-flex items-center text-sm font-medium text-zinc-300 hover:text-white"
-                        >
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Volver a cursos
-                        </Link>
-                        <div className="mb-4 inline-flex items-center rounded-full bg-blue-600/20 px-3 py-1 text-sm font-medium text-blue-400 backdrop-blur-sm">
-                            {category}
+                        <div className='flex items-center gap-2'>
+
+                            <Link
+                                href="/courses"
+                                className="mb-6 inline-flex items-center text-sm font-medium text-zinc-300 hover:text-white"
+                            >
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Volver a cursos
+                            </Link>
+                            <div className="mb-4 inline-flex items-center rounded-full bg-blue-600/20 px-3 py-1 text-sm font-medium text-blue-400 backdrop-blur-sm">
+                                {category}
+                            </div>
                         </div>
                         <h1 className="mb-4 text-3xl font-bold text-white md:text-5xl" dangerouslySetInnerHTML={{ __html: course.title.rendered }} />
                         <div className="flex flex-wrap items-center gap-6 text-zinc-300">

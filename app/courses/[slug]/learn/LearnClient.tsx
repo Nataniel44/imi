@@ -297,7 +297,10 @@ export default function LearnClient({ course, lessons, slug }: LearnClientProps)
                             {/* Contenido */}
                             <div className="mt-8 prose prose-sm prose-zinc dark:prose-invert max-w-none md:prose-base">
                                 {activeTab === 'contenido' && (
-                                    <div dangerouslySetInnerHTML={{ __html: fixWordPressUrls(activeLesson?.content?.rendered || activeLesson?.acf?.contenido || "Sin descripción.") }} />
+                                    <div className="">
+
+                                        <div dangerouslySetInnerHTML={{ __html: fixWordPressUrls(activeLesson?.content?.rendered || activeLesson?.acf?.contenido || "Sin descripción.") }} />
+                                    </div>
                                 )}
                                 {activeTab === 'recursos' && (
                                     <div className="space-y-6 not-prose">
@@ -447,7 +450,7 @@ export default function LearnClient({ course, lessons, slug }: LearnClientProps)
                                         expandedModules={expandedModules}
                                         setExpandedModules={setExpandedModules}
                                         activeLesson={activeLesson}
-                                        setActiveLesson={(l) => {
+                                        setActiveLesson={(l: any) => {
                                             setActiveLesson(l);
                                             setShowMobileMenu(false);
                                         }}
