@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Navbar } from "@/components/Navbar";
-import { getCourseBySlug, getCourses } from "@/lib/wordpress";
+import { getCourseBySlug, getCourses, fixWordPressUrls } from "@/lib/wordpress";
 import { Clock, BookOpen, Star, CheckCircle, ArrowLeft, PlayCircle } from 'lucide-react';
 import { BuyButton } from "@/components/BuyButton";
 import { getServerSession } from "next-auth";
@@ -66,9 +66,8 @@ export default async function CoursePage({ params }: PageProps) {
             <div className="relative h-[400px] w-full overflow-hidden bg-zinc-900">
                 <Image
                     src={image}
-                    alt={course.title.rendered.replace(/<[^>]+>/g, '')}
+                    alt={course.title.rendered.replace(/<[^>]+>/g, '') || "Imagen del curso"}
                     fill
-                    unoptimized
                     className="object-cover opacity-50"
                     priority
                 />
@@ -110,7 +109,7 @@ export default async function CoursePage({ params }: PageProps) {
                         <h2 className="mb-6 text-2xl font-bold text-zinc-900 dark:text-zinc-50">Descripción del Curso</h2>
                         <div
                             className="prose prose-lg dark:prose-invert text-zinc-600 dark:text-zinc-400"
-                            dangerouslySetInnerHTML={{ __html: course.content.rendered }}
+                            dangerouslySetInnerHTML={{ __html: fixWordPressUrls(course.content.rendered) }}
                         />
                     </section>
 

@@ -39,7 +39,7 @@ const auth = Buffer.from(`${USER}:${PASS}`).toString('base64');
 
 console.log('\n--- Testing Connection ---');
 
-const url = new URL(`${WP_URL.replace('http://', 'https://')}/wp-json/wp/v2/users/me`);
+const url = new URL(`${WP_URL.replace('http://', 'https://')}/wp-json/wp/v2/types`);
 const lib = https;
 
 const req = lib.request(url, {

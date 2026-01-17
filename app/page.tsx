@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { CourseCard } from "@/components/CourseCard";
-import { getCourses } from "@/lib/wordpress";
+import { getCourses, fixWordPressUrls } from "@/lib/wordpress";
 
 export const revalidate = 60;
 
@@ -31,8 +31,8 @@ export default async function Home() {
 
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {featuredCourses.map((course: any) => {
-                const image = course._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
-                  "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop";
+                const image = fixWordPressUrls(course._embedded?.['wp:featuredmedia']?.[0]?.source_url ||
+                  "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop");
                 const description = course.excerpt?.rendered?.replace(/<[^>]+>/g, '') || "";
 
                 return (

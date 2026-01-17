@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'informartica-wordpress-993d7e-147-79-106-82.traefik.me',
       },
+      {
+        protocol: 'https',
+        hostname: '*.gravatar.com',
+      },
     ],
   },
 };

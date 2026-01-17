@@ -28,10 +28,10 @@ export function CourseCard({ title, slug, image, category, description, lessons,
                 {image && (
                     <Image
                         src={image}
-                        alt={title.replace(/<[^>]+>/g, '')}
+                        alt={title.replace(/<[^>]+>/g, '') || "Imagen del curso"}
                         fill
-                        unoptimized
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                 )}
                 <div className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-1 text-xs font-semibold text-blue-600 backdrop-blur-sm dark:bg-black/80 dark:text-blue-400">
